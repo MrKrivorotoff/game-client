@@ -359,6 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5754318f52c5b7644a86444de0ea2b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  <NetworkConfig>k__BackingField: {fileID: 11400000, guid: 243b5e8c1b3b9144a9cc1d148e6fd5e4, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

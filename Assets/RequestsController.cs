@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
@@ -6,11 +7,20 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(PanelRenderer))]
 public sealed class RequestsController : MonoBehaviour
 {
+    [field: SerializeReference] public NetworkConfig NetworkConfig { get; set; }
+
+    private byte[] _expectedCertBytes;
     private PanelRenderer _panelRenderer;
+    private Label _responseBody;
     private Button _sendInventoryRequestButton;
     private Button _sendLoginRequestButton;
-    private Label _responseBody;
     private int _uiVersion;
+
+    public void Start()
+    {
+        var certPath = Path.Combine(Application.streamingAssetsPath, "game-backend-cert.crt");
+        _expectedCertBytes = File.ReadAllBytes(certPath);
+    }
 
     public void OnEnable()
     {
@@ -43,12 +53,14 @@ public sealed class RequestsController : MonoBehaviour
             sendInventoryRequestButton.clicked -= OnClickedSendInventoryRequest;
             _sendInventoryRequestButton = null;
         }
+
         var sendLoginRequestButton = _sendLoginRequestButton;
         if (sendLoginRequestButton != null)
         {
             sendLoginRequestButton.clicked -= OnClickedSendLoginRequest;
             _sendLoginRequestButton = null;
         }
+
         _responseBody = null;
     }
 
@@ -67,13 +79,18 @@ public sealed class RequestsController : MonoBehaviour
     {
         StartCoroutine(SendInventoryRequest());
     }
-    
+
     private IEnumerator SendInventoryRequest()
     {
-        using var request = UnityWebRequest.Get("http://localhost:8081/inventory/user_currencies");
+        using var request = UnityWebRequest.Get(NetworkConfig.serverBaseUrl + "/inventory/user_currencies");
+        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
             yield break;
+        }
+
         SetResponseBodyText(request.downloadHandler.text);
     }
 
@@ -84,10 +101,15 @@ public sealed class RequestsController : MonoBehaviour
 
     private IEnumerator SendLoginRequest()
     {
-        using var request = UnityWebRequest.Post("http://localhost:8082/login", "", "");
+        using var request = UnityWebRequest.Post(NetworkConfig.serverBaseUrl + "/login", "", "");
+        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
             yield break;
+        }
+
         SetResponseBodyText(request.downloadHandler.text);
     }
 

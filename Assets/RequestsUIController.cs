@@ -1,30 +1,25 @@
-using System.Collections;
-using System.IO;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
+[RequireComponent(typeof(RequestsSender))]
 [RequireComponent(typeof(PanelRenderer))]
-public sealed class RequestsController : MonoBehaviour
+public sealed class RequestsUIController : MonoBehaviour
 {
-    [field: SerializeReference] public NetworkConfig NetworkConfig { get; set; }
-
-    private byte[] _expectedCertBytes;
+    private RequestsSender _requestsSender;
     private PanelRenderer _panelRenderer;
     private Label _responseBody;
     private Button _sendInventoryRequestButton;
     private Button _sendLoginRequestButton;
     private int _uiVersion;
 
-    public void Start()
+    public void Awake()
     {
-        var certPath = Path.Combine(Application.streamingAssetsPath, "game-backend-cert.crt");
-        _expectedCertBytes = File.ReadAllBytes(certPath);
+        _requestsSender = GetComponent<RequestsSender>();
+        _panelRenderer = GetComponent<PanelRenderer>();
     }
 
     public void OnEnable()
     {
-        _panelRenderer = GetComponent<PanelRenderer>();
         _panelRenderer.RegisterUIReloadCallback(OnUIReload);
     }
 
@@ -77,40 +72,12 @@ public sealed class RequestsController : MonoBehaviour
 
     private void OnClickedSendInventoryRequest()
     {
-        StartCoroutine(SendInventoryRequest());
-    }
-
-    private IEnumerator SendInventoryRequest()
-    {
-        using var request = UnityWebRequest.Get(NetworkConfig.serverBaseUrl + "/inventory/user_currencies");
-        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
-        yield return request.SendWebRequest();
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
-            yield break;
-        }
-
-        SetResponseBodyText(request.downloadHandler.text);
+        StartCoroutine(_requestsSender.SendInventoryRequest(SetResponseBodyText));
     }
 
     private void OnClickedSendLoginRequest()
     {
-        StartCoroutine(SendLoginRequest());
-    }
-
-    private IEnumerator SendLoginRequest()
-    {
-        using var request = UnityWebRequest.Post(NetworkConfig.serverBaseUrl + "/login", "", "");
-        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
-        yield return request.SendWebRequest();
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
-            yield break;
-        }
-
-        SetResponseBodyText(request.downloadHandler.text);
+        StartCoroutine(_requestsSender.SendLoginRequest(SetResponseBodyText));
     }
 
     private void SetResponseBodyText(string text)

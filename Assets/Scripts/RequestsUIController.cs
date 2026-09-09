@@ -77,7 +77,7 @@ public sealed class RequestsUIController : MonoBehaviour
 
     private void OnClickedSendLoginRequest()
     {
-        StartCoroutine(_requestsSender.SendLoginRequest(SetResponseBodyText));
+        StartCoroutine(_requestsSender.SendLoginRequest("placeholder_login", "placeholder_password", SetResponseBodyText));
     }
 
     private void SetResponseBodyText(string text)

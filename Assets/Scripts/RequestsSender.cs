@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using Google.Protobuf;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -34,10 +35,14 @@ public sealed class RequestsSender : MonoBehaviour
         onComplete(request.downloadHandler.text);
     }
 
-    public IEnumerator SendLoginRequest(Action<string> onComplete)
+    public IEnumerator SendLoginRequest(string login, string password, Action<string> onComplete)
     {
-        using var request = UnityWebRequest.Post(_postLoginUrl, "", "");
+        var requestMessage = new LoginRequest { Login = login, Password = password };
+        using var request = new UnityWebRequest(_postLoginUrl, UnityWebRequest.kHttpVerbPOST);
+        request.uploadHandler = new UploadHandlerRaw(requestMessage.ToByteArray());
+        request.downloadHandler = new DownloadHandlerBuffer();
         request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.SetRequestHeader("Content-Type", "application/x-protobuf");
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
         {
@@ -45,6 +50,7 @@ public sealed class RequestsSender : MonoBehaviour
             yield break;
         }
 
-        onComplete(request.downloadHandler.text);
+        var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
+        onComplete(responseMessage.Token);
     }
 }

@@ -1,5 +1,15 @@
 {
+  "scopedRegistries": [
+    {
+      "name": "UnityNuGet",
+      "url": "https://unitynuget-registry.openupm.com",
+      "scopes": [
+        "org.nuget"
+      ]
+    }
+  ],
   "dependencies": {
+    "org.nuget.google.protobuf": "3.36.1",
     "com.unity.2d.animation": "16.0.1",
     "com.unity.2d.aseprite": "6.0.0",
     "com.unity.2d.psdimporter": "15.0.1",

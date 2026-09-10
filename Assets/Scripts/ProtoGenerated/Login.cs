@@ -22,14 +22,14 @@ public static partial class LoginReflection {
   static LoginReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "CgtMb2dpbi5wcm90byIvCgxMb2dpblJlcXVlc3QSDQoFbG9naW4YASABKAkS",
-          "EAoIcGFzc3dvcmQYAiABKAkiHgoNTG9naW5SZXNwb25zZRINCgV0b2tlbhgB",
-          "IAEoCUInCiVjb20ubXJrcml2b3JvdG9mZi5sb2dpbl9zZXJ2aWNlLnByb3Rv",
-          "YgZwcm90bzM="));
+          "CgtMb2dpbi5wcm90byIyCgxMb2dpblJlcXVlc3QSEAoIdXNlcm5hbWUYASAB",
+          "KAkSEAoIcGFzc3dvcmQYAiABKAkiHgoNTG9naW5SZXNwb25zZRINCgV0b2tl",
+          "bhgBIAEoCUInCiVjb20ubXJrcml2b3JvdG9mZi5sb2dpbl9zZXJ2aWNlLnBy",
+          "b3RvYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::LoginRequest), global::LoginRequest.Parser, new[]{ "Login", "Password" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::LoginRequest), global::LoginRequest.Parser, new[]{ "Username", "Password" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::LoginResponse), global::LoginResponse.Parser, new[]{ "Token" }, null, null, null, null)
         }));
   }
@@ -72,7 +72,7 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public LoginRequest(LoginRequest other) : this() {
-    login_ = other.login_;
+    username_ = other.username_;
     password_ = other.password_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -83,15 +83,15 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
     return new LoginRequest(this);
   }
 
-  /// <summary>Field number for the "login" field.</summary>
-  public const int LoginFieldNumber = 1;
-  private string login_ = "";
+  /// <summary>Field number for the "username" field.</summary>
+  public const int UsernameFieldNumber = 1;
+  private string username_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string Login {
-    get { return login_; }
+  public string Username {
+    get { return username_; }
     set {
-      login_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      username_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -122,7 +122,7 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (Login != other.Login) return false;
+    if (Username != other.Username) return false;
     if (Password != other.Password) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -131,7 +131,7 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (Login.Length != 0) hash ^= Login.GetHashCode();
+    if (Username.Length != 0) hash ^= Username.GetHashCode();
     if (Password.Length != 0) hash ^= Password.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -151,9 +151,9 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (Login.Length != 0) {
+    if (Username.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(Login);
+      output.WriteString(Username);
     }
     if (Password.Length != 0) {
       output.WriteRawTag(18);
@@ -169,9 +169,9 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (Login.Length != 0) {
+    if (Username.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(Login);
+      output.WriteString(Username);
     }
     if (Password.Length != 0) {
       output.WriteRawTag(18);
@@ -187,8 +187,8 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (Login.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(Login);
+    if (Username.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Username);
     }
     if (Password.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Password);
@@ -205,8 +205,8 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
     if (other == null) {
       return;
     }
-    if (other.Login.Length != 0) {
-      Login = other.Login;
+    if (other.Username.Length != 0) {
+      Username = other.Username;
     }
     if (other.Password.Length != 0) {
       Password = other.Password;
@@ -231,7 +231,7 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          Login = input.ReadString();
+          Username = input.ReadString();
           break;
         }
         case 18: {
@@ -258,7 +258,7 @@ public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          Login = input.ReadString();
+          Username = input.ReadString();
           break;
         }
         case 18: {

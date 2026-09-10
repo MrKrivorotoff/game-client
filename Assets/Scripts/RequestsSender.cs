@@ -35,9 +35,9 @@ public sealed class RequestsSender : MonoBehaviour
         onComplete(request.downloadHandler.text);
     }
 
-    public IEnumerator SendLoginRequest(string login, string password, Action<string> onComplete)
+    public IEnumerator SendLoginRequest(string username, string password, Action<string> onComplete)
     {
-        var requestMessage = new LoginRequest { Login = login, Password = password };
+        var requestMessage = new LoginRequest { Username = username, Password = password };
         using var request = new UnityWebRequest(_postLoginUrl, UnityWebRequest.kHttpVerbPOST);
         request.uploadHandler = new UploadHandlerRaw(requestMessage.ToByteArray());
         request.downloadHandler = new DownloadHandlerBuffer();

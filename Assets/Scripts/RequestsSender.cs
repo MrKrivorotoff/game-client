@@ -18,7 +18,7 @@ public sealed class RequestsSender : MonoBehaviour
         var certPath = Path.Combine(Application.streamingAssetsPath, "game-backend-cert.crt");
         _expectedCertBytes = File.ReadAllBytes(certPath);
         _getUserCurrenciesUrl = NetworkConfig.serverBaseUrl + "/inventory/user_currencies";
-        _postLoginUrl = NetworkConfig.serverBaseUrl + "/login";
+        _postLoginUrl = NetworkConfig.serverBaseUrl + "/auth/login";
     }
 
     public IEnumerator SendInventoryRequest(Action<string> onComplete)

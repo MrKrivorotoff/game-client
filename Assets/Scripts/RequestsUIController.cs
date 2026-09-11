@@ -7,9 +7,12 @@ public sealed class RequestsUIController : MonoBehaviour
 {
     private RequestsSender _requestsSender;
     private PanelRenderer _panelRenderer;
-    private Label _responseBody;
+    private Label _responseBodyLabel;
+    private TextField _usernameTextField;
+    private TextField _passwordTextField;
     private Button _sendInventoryRequestButton;
     private Button _sendLoginRequestButton;
+    private Button _sendRegisterRequestButton;
     private int _uiVersion;
 
     public void Awake()
@@ -55,19 +58,33 @@ public sealed class RequestsUIController : MonoBehaviour
             sendLoginRequestButton.clicked -= OnClickedSendLoginRequest;
             _sendLoginRequestButton = null;
         }
+        
+        var sendRegisterRequestButton = _sendRegisterRequestButton;
+        if (sendRegisterRequestButton != null)
+        {
+            sendRegisterRequestButton.clicked -= OnClickedSendLoginRequest;
+            _sendRegisterRequestButton = null;
+        }
 
-        _responseBody = null;
+        _responseBodyLabel = null;
+        _usernameTextField = null;
+        _passwordTextField = null;
     }
 
     private void BindUI(VisualElement rootElement)
     {
         var sendInventoryRequestButton = rootElement.Q<Button>("SendInventoryRequest");
         var sendLoginRequestButton = rootElement.Q<Button>("SendLoginRequest");
+        var sendRegisterRequestButton = rootElement.Q<Button>("SendRegistrationRequest");
         sendInventoryRequestButton.clicked += OnClickedSendInventoryRequest;
         sendLoginRequestButton.clicked += OnClickedSendLoginRequest;
+        sendRegisterRequestButton.clicked += OnClickedSendRegisterRequest;
         _sendInventoryRequestButton = sendInventoryRequestButton;
         _sendLoginRequestButton = sendLoginRequestButton;
-        _responseBody = rootElement.Q<Label>("ResponseBody");
+        _sendRegisterRequestButton = sendRegisterRequestButton;
+        _responseBodyLabel = rootElement.Q<Label>("ResponseBody");
+        _usernameTextField = rootElement.Q<TextField>("Username");
+        _passwordTextField = rootElement.Q<TextField>("Password");
     }
 
     private void OnClickedSendInventoryRequest()
@@ -77,12 +94,17 @@ public sealed class RequestsUIController : MonoBehaviour
 
     private void OnClickedSendLoginRequest()
     {
-        StartCoroutine(_requestsSender.SendLoginRequest("placeholder_username", "placeholder_password", SetResponseBodyText));
+        StartCoroutine(_requestsSender.SendLoginRequest(_usernameTextField.text, _passwordTextField.text, SetResponseBodyText));
+    }
+    
+    private void OnClickedSendRegisterRequest()
+    {
+        StartCoroutine(_requestsSender.SendRegisterRequest(_usernameTextField.text, _passwordTextField.text, () => Debug.Log("Registration Done")));
     }
 
     private void SetResponseBodyText(string text)
     {
-        var responseBody = _responseBody;
+        var responseBody = _responseBodyLabel;
         if (responseBody != null)
             responseBody.text = text;
     }

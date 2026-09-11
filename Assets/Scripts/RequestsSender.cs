@@ -12,6 +12,7 @@ public sealed class RequestsSender : MonoBehaviour
     private byte[] _expectedCertBytes;
     private string _getUserCurrenciesUrl;
     private string _postLoginUrl;
+    private string _postRegisterUrl;
 
     public void Start()
     {
@@ -19,6 +20,7 @@ public sealed class RequestsSender : MonoBehaviour
         _expectedCertBytes = File.ReadAllBytes(certPath);
         _getUserCurrenciesUrl = NetworkConfig.serverBaseUrl + "/inventory/user_currencies";
         _postLoginUrl = NetworkConfig.serverBaseUrl + "/auth/login";
+        _postRegisterUrl = NetworkConfig.serverBaseUrl + "/auth/register";
     }
 
     public IEnumerator SendInventoryRequest(Action<string> onComplete)
@@ -52,5 +54,22 @@ public sealed class RequestsSender : MonoBehaviour
 
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
         onComplete(responseMessage.Token);
+    }
+
+    public IEnumerator SendRegisterRequest(string username, string password, Action onComplete)
+    {
+        var requestMessage = new RegisterRequest { Username = username, Password = password };
+        using var request = new UnityWebRequest(_postRegisterUrl, UnityWebRequest.kHttpVerbPOST);
+        request.uploadHandler = new UploadHandlerRaw(requestMessage.ToByteArray());
+        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.SetRequestHeader("Content-Type", "application/x-protobuf");
+        yield return request.SendWebRequest();
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
+            yield break;
+        }
+
+        onComplete();
     }
 }

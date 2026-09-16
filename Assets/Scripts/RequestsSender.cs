@@ -53,7 +53,7 @@ public sealed class RequestsSender : MonoBehaviour
         }
 
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
-        onComplete(responseMessage.Token);
+        onComplete(responseMessage.SessionId);
     }
 
     public IEnumerator SendRegisterRequest(string username, string password, Action onComplete)

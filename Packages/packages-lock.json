@@ -295,7 +295,7 @@
       "url": "https://packages.unity.com"
     },
     "org.nuget.google.protobuf": {
-      "version": "3.36.1",
+      "version": "3.36.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {

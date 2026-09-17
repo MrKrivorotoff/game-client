@@ -13,6 +13,7 @@ public sealed class RequestsSender : MonoBehaviour
     private string _getUserCurrenciesUrl;
     private string _postLoginUrl;
     private string _postRegisterUrl;
+    private string _sessionId;
 
     public void Start()
     {
@@ -25,8 +26,16 @@ public sealed class RequestsSender : MonoBehaviour
 
     public IEnumerator SendInventoryRequest(Action<string> onComplete)
     {
+        var sessionId = _sessionId;
+        if (sessionId is null)
+        {
+            Debug.LogErrorFormat("Login required");
+            yield break;
+        }
+
         using var request = UnityWebRequest.Get(_getUserCurrenciesUrl);
         request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.SetRequestHeader("Authorization", "Bearer " + _sessionId);
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
         {
@@ -53,7 +62,7 @@ public sealed class RequestsSender : MonoBehaviour
         }
 
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
-        onComplete(responseMessage.SessionId);
+        onComplete(_sessionId = responseMessage.SessionId);
     }
 
     public IEnumerator SendRegisterRequest(string username, string password, Action onComplete)

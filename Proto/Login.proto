@@ -8,5 +8,5 @@ message LoginRequest {
 }
 
 message LoginResponse {
-    string session_id = 1;
+    string access_token = 1;
 }

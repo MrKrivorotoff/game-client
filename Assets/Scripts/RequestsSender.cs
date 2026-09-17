@@ -12,8 +12,9 @@ public sealed class RequestsSender : MonoBehaviour
     private byte[] _expectedCertBytes;
     private string _getUserCurrenciesUrl;
     private string _postLoginUrl;
+    private string _postLoginBasicUrl;
     private string _postRegisterUrl;
-    private string _sessionId;
+    private string _accessToken;
 
     public void Start()
     {
@@ -21,13 +22,14 @@ public sealed class RequestsSender : MonoBehaviour
         _expectedCertBytes = File.ReadAllBytes(certPath);
         _getUserCurrenciesUrl = NetworkConfig.serverBaseUrl + "/inventory/user_currencies";
         _postLoginUrl = NetworkConfig.serverBaseUrl + "/auth/login";
+        _postLoginBasicUrl = NetworkConfig.serverBaseUrl + "/auth/login_basic";
         _postRegisterUrl = NetworkConfig.serverBaseUrl + "/auth/register";
     }
 
     public IEnumerator SendInventoryRequest(Action<string> onComplete)
     {
-        var sessionId = _sessionId;
-        if (sessionId is null)
+        var accessToken = _accessToken;
+        if (accessToken is null)
         {
             Debug.LogErrorFormat("Login required");
             yield break;
@@ -35,7 +37,7 @@ public sealed class RequestsSender : MonoBehaviour
 
         using var request = UnityWebRequest.Get(_getUserCurrenciesUrl);
         request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
-        request.SetRequestHeader("Authorization", "Bearer " + _sessionId);
+        request.SetRequestHeader("Authorization", AuthHeaders.CreateBearerValue(accessToken));
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
         {
@@ -62,7 +64,24 @@ public sealed class RequestsSender : MonoBehaviour
         }
 
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
-        onComplete(_sessionId = responseMessage.SessionId);
+        onComplete(_accessToken = responseMessage.AccessToken);
+    }
+    
+    public IEnumerator SendLoginBasicRequest(string username, string password, Action<string> onComplete)
+    {
+        using var request = new UnityWebRequest(_postLoginBasicUrl, UnityWebRequest.kHttpVerbPOST);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.SetRequestHeader("Authorization", AuthHeaders.CreateBasicValue(username, password));
+        yield return request.SendWebRequest();
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
+            yield break;
+        }
+
+        var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
+        onComplete(_accessToken = responseMessage.AccessToken);
     }
 
     public IEnumerator SendRegisterRequest(string username, string password, Action onComplete)

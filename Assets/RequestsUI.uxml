@@ -2,6 +2,7 @@
     <ui:TextField label="Username" placeholder-text="filler text" name="Username"/>
     <ui:TextField label="Password" placeholder-text="filler text" name="Password"/>
     <ui:Button text="Login" name="SendLoginRequest"/>
+    <ui:Button text="Login (Basic)" name="SendLoginBasicRequest"/>
     <ui:Button text="Register" name="SendRegistrationRequest"/>
     <ui:Button text="Inventory" name="SendInventoryRequest"/>
     <ui:Label text="Response" name="ResponseBody"/>

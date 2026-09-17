@@ -23,14 +23,14 @@ public static partial class LoginReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "CgtMb2dpbi5wcm90byIyCgxMb2dpblJlcXVlc3QSEAoIdXNlcm5hbWUYASAB",
-          "KAkSEAoIcGFzc3dvcmQYAiABKAkiIwoNTG9naW5SZXNwb25zZRISCgpzZXNz",
-          "aW9uX2lkGAEgASgJQiYKJGNvbS5tcmtyaXZvcm90b2ZmLmF1dGhfc2Vydmlj",
-          "ZS5wcm90b2IGcHJvdG8z"));
+          "KAkSEAoIcGFzc3dvcmQYAiABKAkiJQoNTG9naW5SZXNwb25zZRIUCgxhY2Nl",
+          "c3NfdG9rZW4YASABKAlCJgokY29tLm1ya3Jpdm9yb3RvZmYuYXV0aF9zZXJ2",
+          "aWNlLnByb3RvYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::LoginRequest), global::LoginRequest.Parser, new[]{ "Username", "Password" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::LoginResponse), global::LoginResponse.Parser, new[]{ "SessionId" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::LoginResponse), global::LoginResponse.Parser, new[]{ "AccessToken" }, null, null, null, null)
         }));
   }
   #endregion
@@ -307,7 +307,7 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public LoginResponse(LoginResponse other) : this() {
-    sessionId_ = other.sessionId_;
+    accessToken_ = other.accessToken_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -317,15 +317,15 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
     return new LoginResponse(this);
   }
 
-  /// <summary>Field number for the "session_id" field.</summary>
-  public const int SessionIdFieldNumber = 1;
-  private string sessionId_ = "";
+  /// <summary>Field number for the "access_token" field.</summary>
+  public const int AccessTokenFieldNumber = 1;
+  private string accessToken_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string SessionId {
-    get { return sessionId_; }
+  public string AccessToken {
+    get { return accessToken_; }
     set {
-      sessionId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      accessToken_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -344,7 +344,7 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (SessionId != other.SessionId) return false;
+    if (AccessToken != other.AccessToken) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -352,7 +352,7 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (SessionId.Length != 0) hash ^= SessionId.GetHashCode();
+    if (AccessToken.Length != 0) hash ^= AccessToken.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -371,9 +371,9 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (SessionId.Length != 0) {
+    if (AccessToken.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(SessionId);
+      output.WriteString(AccessToken);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -385,9 +385,9 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (SessionId.Length != 0) {
+    if (AccessToken.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(SessionId);
+      output.WriteString(AccessToken);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -399,8 +399,8 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (SessionId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(SessionId);
+    if (AccessToken.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(AccessToken);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -414,8 +414,8 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
     if (other == null) {
       return;
     }
-    if (other.SessionId.Length != 0) {
-      SessionId = other.SessionId;
+    if (other.AccessToken.Length != 0) {
+      AccessToken = other.AccessToken;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -437,7 +437,7 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          SessionId = input.ReadString();
+          AccessToken = input.ReadString();
           break;
         }
       }
@@ -460,7 +460,7 @@ public sealed partial class LoginResponse : pb::IMessage<LoginResponse>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          SessionId = input.ReadString();
+          AccessToken = input.ReadString();
           break;
         }
       }

@@ -12,6 +12,7 @@ public sealed class RequestsUIController : MonoBehaviour
     private TextField _passwordTextField;
     private Button _sendInventoryRequestButton;
     private Button _sendLoginRequestButton;
+    private Button _sendLoginBasicRequestButton;
     private Button _sendRegisterRequestButton;
     private int _uiVersion;
 
@@ -59,6 +60,13 @@ public sealed class RequestsUIController : MonoBehaviour
             _sendLoginRequestButton = null;
         }
         
+        var sendLoginBasicRequestButton = _sendLoginBasicRequestButton;
+        if (sendLoginBasicRequestButton != null)
+        {
+            sendLoginBasicRequestButton.clicked -= OnClickedSendLoginBasicRequest;
+            _sendLoginBasicRequestButton = null;
+        }
+        
         var sendRegisterRequestButton = _sendRegisterRequestButton;
         if (sendRegisterRequestButton != null)
         {
@@ -75,12 +83,15 @@ public sealed class RequestsUIController : MonoBehaviour
     {
         var sendInventoryRequestButton = rootElement.Q<Button>("SendInventoryRequest");
         var sendLoginRequestButton = rootElement.Q<Button>("SendLoginRequest");
+        var sendLoginBasicRequestButton = rootElement.Q<Button>("SendLoginBasicRequest");
         var sendRegisterRequestButton = rootElement.Q<Button>("SendRegistrationRequest");
         sendInventoryRequestButton.clicked += OnClickedSendInventoryRequest;
         sendLoginRequestButton.clicked += OnClickedSendLoginRequest;
+        sendLoginBasicRequestButton.clicked += OnClickedSendLoginBasicRequest;
         sendRegisterRequestButton.clicked += OnClickedSendRegisterRequest;
         _sendInventoryRequestButton = sendInventoryRequestButton;
         _sendLoginRequestButton = sendLoginRequestButton;
+        _sendLoginBasicRequestButton = sendLoginBasicRequestButton;
         _sendRegisterRequestButton = sendRegisterRequestButton;
         _responseBodyLabel = rootElement.Q<Label>("ResponseBody");
         _usernameTextField = rootElement.Q<TextField>("Username");
@@ -95,6 +106,11 @@ public sealed class RequestsUIController : MonoBehaviour
     private void OnClickedSendLoginRequest()
     {
         StartCoroutine(_requestsSender.SendLoginRequest(_usernameTextField.text, _passwordTextField.text, SetResponseBodyText));
+    }
+    
+    private void OnClickedSendLoginBasicRequest()
+    {
+        StartCoroutine(_requestsSender.SendLoginBasicRequest(_usernameTextField.text, _passwordTextField.text, SetResponseBodyText));
     }
     
     private void OnClickedSendRegisterRequest()

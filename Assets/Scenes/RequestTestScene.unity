@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RequestsSender
   <NetworkConfig>k__BackingField: {fileID: 11400000, guid: 243b5e8c1b3b9144a9cc1d148e6fd5e4, type: 2}
-  <CertificateHandlerProvider>k__BackingField: {fileID: 11400000, guid: 40dbf5a316e6a3f46b89737c48c11767, type: 2}
+  <CertificateHandlerProvider>k__BackingField: {fileID: 11400000, guid: cb98bf7ef3691fb45985325a2b358a31, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

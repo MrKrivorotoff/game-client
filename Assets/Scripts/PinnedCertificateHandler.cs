@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Assertions;
 using UnityEngine.Networking;
 
 public sealed class PinnedCertificateHandler : CertificateHandler
@@ -7,7 +8,8 @@ public sealed class PinnedCertificateHandler : CertificateHandler
 
     public PinnedCertificateHandler(byte[] expectedCertBytes)
     {
-        _expectedCertificateData = expectedCertBytes ?? throw new ArgumentNullException(nameof(expectedCertBytes));
+        Assert.IsNotNull(expectedCertBytes);
+        _expectedCertificateData = expectedCertBytes;
     }
 
     protected override bool ValidateCertificate(byte[] certificateData)

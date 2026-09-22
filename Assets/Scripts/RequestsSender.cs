@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
 using Google.Protobuf;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,18 +7,17 @@ using UnityEngine.Networking;
 public sealed class RequestsSender : MonoBehaviour
 {
     [field: SerializeReference] public NetworkConfig NetworkConfig { get; set; }
+    [field: SerializeReference] public CertificateHandlerProvider CertificateHandlerProvider { get; set; }
 
-    private byte[] _expectedCertBytes;
-    private string _getUserCurrenciesUrl;
-    private string _postLoginUrl;
-    private string _postLoginBasicUrl;
-    private string _postRegisterUrl;
     private string _accessToken;
+
+    private string _getUserCurrenciesUrl;
+    private string _postLoginBasicUrl;
+    private string _postLoginUrl;
+    private string _postRegisterUrl;
 
     public void Start()
     {
-        var certPath = Path.Combine(Application.streamingAssetsPath, "game-backend-cert.crt");
-        _expectedCertBytes = File.ReadAllBytes(certPath);
         _getUserCurrenciesUrl = NetworkConfig.serverBaseUrl + "/inventory/user_currencies";
         _postLoginUrl = NetworkConfig.serverBaseUrl + "/auth/login";
         _postLoginBasicUrl = NetworkConfig.serverBaseUrl + "/auth/login_basic";
@@ -36,7 +34,8 @@ public sealed class RequestsSender : MonoBehaviour
         }
 
         using var request = UnityWebRequest.Get(_getUserCurrenciesUrl);
-        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.certificateHandler = CertificateHandlerProvider.CertificateHandler;
+        request.disposeCertificateHandlerOnDispose = CertificateHandlerProvider.DisposeHandlerOnRequestDispose;
         request.SetRequestHeader("Authorization", AuthHeaders.CreateBearerValue(accessToken));
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
@@ -54,7 +53,8 @@ public sealed class RequestsSender : MonoBehaviour
         using var request = new UnityWebRequest(_postLoginUrl, UnityWebRequest.kHttpVerbPOST);
         request.uploadHandler = new UploadHandlerRaw(requestMessage.ToByteArray());
         request.downloadHandler = new DownloadHandlerBuffer();
-        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.certificateHandler = CertificateHandlerProvider.CertificateHandler;
+        request.disposeCertificateHandlerOnDispose = CertificateHandlerProvider.DisposeHandlerOnRequestDispose;
         request.SetRequestHeader("Content-Type", "application/x-protobuf");
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
@@ -66,12 +66,13 @@ public sealed class RequestsSender : MonoBehaviour
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
         onComplete(_accessToken = responseMessage.AccessToken);
     }
-    
+
     public IEnumerator SendLoginBasicRequest(string username, string password, Action<string> onComplete)
     {
         using var request = new UnityWebRequest(_postLoginBasicUrl, UnityWebRequest.kHttpVerbPOST);
         request.downloadHandler = new DownloadHandlerBuffer();
-        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.certificateHandler = CertificateHandlerProvider.CertificateHandler;
+        request.disposeCertificateHandlerOnDispose = CertificateHandlerProvider.DisposeHandlerOnRequestDispose;
         request.SetRequestHeader("Authorization", AuthHeaders.CreateBasicValue(username, password));
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
@@ -89,7 +90,8 @@ public sealed class RequestsSender : MonoBehaviour
         var requestMessage = new RegisterRequest { Username = username, Password = password };
         using var request = new UnityWebRequest(_postRegisterUrl, UnityWebRequest.kHttpVerbPOST);
         request.uploadHandler = new UploadHandlerRaw(requestMessage.ToByteArray());
-        request.certificateHandler = new PinnedCertificateHandler(_expectedCertBytes);
+        request.certificateHandler = CertificateHandlerProvider.CertificateHandler;
+        request.disposeCertificateHandlerOnDispose = CertificateHandlerProvider.DisposeHandlerOnRequestDispose;
         request.SetRequestHeader("Content-Type", "application/x-protobuf");
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)

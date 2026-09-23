@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b926fad63beb495428adf9ec047eacc6, type: 3}
   m_Name: PinnedPublicKeyHandlerProvider
   m_EditorClassIdentifier: Assembly-CSharp::PinnedPublicKeyHandlerProvider
-  certificateRelativePath: game-backend-cert.crt
+  publicKeyHash: 4d5225eb6c141d00e3110e83a3bbe5c031bbdbe40c469afa5ba90687cd0f0890y

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+option java_package = "com.mrkrivorotoff.inventory_service.proto";
+
+message GetUserCurrenciesResponse {
+    map<string, int64> user_currencies = 1;
+}

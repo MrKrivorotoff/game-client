@@ -30,6 +30,7 @@ public sealed class RequestsSender : MonoBehaviour
         if (accessToken is null)
         {
             Debug.LogErrorFormat("Login required");
+            onError?.Invoke();
             yield break;
         }
 
@@ -45,7 +46,16 @@ public sealed class RequestsSender : MonoBehaviour
             yield break;
         }
 
-        onComplete?.Invoke(request.downloadHandler.text);
+        var responseData = request.downloadHandler?.data;
+        if (responseData is not null)
+        {
+            var responseMessage = GetUserCurrenciesResponse.Parser.ParseFrom(responseData);
+            onComplete?.Invoke(responseMessage.ToString());
+        }
+        else
+        {
+            onComplete?.Invoke("Empty");
+        }
     }
 
     public IEnumerator SendLoginRequest(string username, string password, Action<string> onComplete = null, Action onError = null)

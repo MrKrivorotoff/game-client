@@ -5,8 +5,11 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(PanelRenderer))]
 public sealed class RequestsUIController : MonoBehaviour
 {
+    private const string PlayerNamePrefKey = "PlayerName";
+
     private RequestsSender _requestsSender;
     private PanelRenderer _panelRenderer;
+    
     private Label _responseBodyLabel;
     private TextField _usernameTextField;
     private TextField _passwordTextField;
@@ -14,7 +17,9 @@ public sealed class RequestsUIController : MonoBehaviour
     private Button _sendLoginRequestButton;
     private Button _sendLoginBasicRequestButton;
     private Button _sendRegisterRequestButton;
+
     private int _uiVersion;
+    private bool _isDataInitialized;
 
     public void Awake()
     {
@@ -42,6 +47,7 @@ public sealed class RequestsUIController : MonoBehaviour
         _uiVersion = version;
         UnbindUI();
         BindUI(rootElement);
+        InitializeUIData();
     }
 
     private void UnbindUI()
@@ -59,14 +65,14 @@ public sealed class RequestsUIController : MonoBehaviour
             sendLoginRequestButton.clicked -= OnClickedSendLoginRequest;
             _sendLoginRequestButton = null;
         }
-        
+
         var sendLoginBasicRequestButton = _sendLoginBasicRequestButton;
         if (sendLoginBasicRequestButton != null)
         {
             sendLoginBasicRequestButton.clicked -= OnClickedSendLoginBasicRequest;
             _sendLoginBasicRequestButton = null;
         }
-        
+
         var sendRegisterRequestButton = _sendRegisterRequestButton;
         if (sendRegisterRequestButton != null)
         {
@@ -100,22 +106,55 @@ public sealed class RequestsUIController : MonoBehaviour
 
     private void OnClickedSendInventoryRequest()
     {
-        StartCoroutine(_requestsSender.SendInventoryRequest(SetResponseBodyText));
+        StartCoroutine(_requestsSender.SendInventoryRequest(
+            onComplete: text =>
+            {
+                SetResponseBodyText(text);
+                _sendInventoryRequestButton.SetEnabled(true);
+            },
+            onError: () => _sendInventoryRequestButton.SetEnabled(true))
+        );
+        _sendInventoryRequestButton.SetEnabled(false);
     }
 
     private void OnClickedSendLoginRequest()
     {
-        StartCoroutine(_requestsSender.SendLoginRequest(_usernameTextField.text, _passwordTextField.text, SetResponseBodyText));
+        StartCoroutine(_requestsSender.SendLoginRequest(_usernameTextField.value, _passwordTextField.value,
+            onComplete: text =>
+            {
+                SetResponseBodyText(text);
+                _sendLoginRequestButton.SetEnabled(true);
+                PlayerPrefs.SetString(PlayerNamePrefKey, _usernameTextField.value);
+            },
+            onError: () => _sendLoginRequestButton.SetEnabled(true))
+        );
+        _sendLoginRequestButton.SetEnabled(false);
     }
-    
+
     private void OnClickedSendLoginBasicRequest()
     {
-        StartCoroutine(_requestsSender.SendLoginBasicRequest(_usernameTextField.text, _passwordTextField.text, SetResponseBodyText));
+        StartCoroutine(_requestsSender.SendLoginBasicRequest(_usernameTextField.value, _passwordTextField.value,
+            onComplete: text =>
+            {
+                SetResponseBodyText(text);
+                _sendLoginBasicRequestButton.SetEnabled(true);
+                PlayerPrefs.SetString(PlayerNamePrefKey, _usernameTextField.value);
+            },
+            onError: () => _sendLoginBasicRequestButton.SetEnabled(true))
+        );
+        _sendLoginBasicRequestButton.SetEnabled(false);
     }
-    
+
     private void OnClickedSendRegisterRequest()
     {
-        StartCoroutine(_requestsSender.SendRegisterRequest(_usernameTextField.text, _passwordTextField.text, () => Debug.Log("Registration Done")));
+        StartCoroutine(_requestsSender.SendRegisterRequest(_usernameTextField.value, _passwordTextField.value,
+            onComplete: () =>
+            {
+                Debug.Log("Registration Done");
+                _sendRegisterRequestButton.SetEnabled(true);
+            }, onError: () => _sendRegisterRequestButton.SetEnabled(true))
+        );
+        _sendRegisterRequestButton.SetEnabled(false);
     }
 
     private void SetResponseBodyText(string text)
@@ -123,5 +162,13 @@ public sealed class RequestsUIController : MonoBehaviour
         var responseBody = _responseBodyLabel;
         if (responseBody != null)
             responseBody.text = text;
+    }
+
+    private void InitializeUIData()
+    {
+        if (_isDataInitialized) return;
+        if (PlayerPrefs.HasKey(PlayerNamePrefKey))
+            _usernameTextField.value = PlayerPrefs.GetString(PlayerNamePrefKey);
+        _isDataInitialized = true;
     }
 }

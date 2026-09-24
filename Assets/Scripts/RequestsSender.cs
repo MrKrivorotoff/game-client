@@ -24,7 +24,7 @@ public sealed class RequestsSender : MonoBehaviour
         _postRegisterUrl = NetworkConfig.serverBaseUrl + "/auth/register";
     }
 
-    public IEnumerator SendInventoryRequest(Action<string> onComplete)
+    public IEnumerator SendInventoryRequest(Action<string> onComplete = null, Action onError = null)
     {
         var accessToken = _accessToken;
         if (accessToken is null)
@@ -41,13 +41,14 @@ public sealed class RequestsSender : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
+            onError?.Invoke();
             yield break;
         }
 
-        onComplete(request.downloadHandler.text);
+        onComplete?.Invoke(request.downloadHandler.text);
     }
 
-    public IEnumerator SendLoginRequest(string username, string password, Action<string> onComplete)
+    public IEnumerator SendLoginRequest(string username, string password, Action<string> onComplete = null, Action onError = null)
     {
         var requestMessage = new LoginRequest { Username = username, Password = password };
         using var request = new UnityWebRequest(_postLoginUrl, UnityWebRequest.kHttpVerbPOST);
@@ -60,14 +61,15 @@ public sealed class RequestsSender : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
+            onError?.Invoke();
             yield break;
         }
 
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
-        onComplete(_accessToken = responseMessage.AccessToken);
+        onComplete?.Invoke(_accessToken = responseMessage.AccessToken);
     }
 
-    public IEnumerator SendLoginBasicRequest(string username, string password, Action<string> onComplete)
+    public IEnumerator SendLoginBasicRequest(string username, string password, Action<string> onComplete = null, Action onError = null)
     {
         using var request = new UnityWebRequest(_postLoginBasicUrl, UnityWebRequest.kHttpVerbPOST);
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -78,14 +80,15 @@ public sealed class RequestsSender : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
+            onError?.Invoke();
             yield break;
         }
 
         var responseMessage = LoginResponse.Parser.ParseFrom(request.downloadHandler.data);
-        onComplete(_accessToken = responseMessage.AccessToken);
+        onComplete?.Invoke(_accessToken = responseMessage.AccessToken);
     }
 
-    public IEnumerator SendRegisterRequest(string username, string password, Action onComplete)
+    public IEnumerator SendRegisterRequest(string username, string password, Action onComplete = null, Action onError = null)
     {
         var requestMessage = new RegisterRequest { Username = username, Password = password };
         using var request = new UnityWebRequest(_postRegisterUrl, UnityWebRequest.kHttpVerbPOST);
@@ -97,9 +100,10 @@ public sealed class RequestsSender : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogErrorFormat("Request failed: responseCode={0} error={1}", request.responseCode, request.error);
+            onError?.Invoke();
             yield break;
         }
 
-        onComplete();
+        onComplete?.Invoke();
     }
 }

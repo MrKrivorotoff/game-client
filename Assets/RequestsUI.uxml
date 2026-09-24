@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:TextField label="Username" placeholder-text="filler text" name="Username"/>
-    <ui:TextField label="Password" placeholder-text="filler text" name="Password"/>
+    <ui:TextField label="Password" placeholder-text="filler text" name="Password" password="true"/>
     <ui:Button text="Login" name="SendLoginRequest"/>
     <ui:Button text="Login (Basic)" name="SendLoginBasicRequest"/>
     <ui:Button text="Register" name="SendRegistrationRequest"/>
